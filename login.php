@@ -34,28 +34,23 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
           <p class="text-muted">Log in to continue your adoption journey.</p>
         </div>
         <?php if($error): ?><div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i><?= $error ?></div><?php endif; ?>
-        <form method="POST">
+        <form method="POST" autocomplete="off">
           <div class="mb-3">
             <label class="form-label fw-semibold">Email</label>
             <div class="input-group">
               <span class="input-group-text bg-light border-end-0"><i class="fas fa-envelope text-muted"></i></span>
-              <input type="email" name="email" class="form-control border-start-0" placeholder="you@example.com" required>
+              <input type="email" name="email" class="form-control border-start-0" placeholder="you@example.com" autocomplete="off" required>
             </div>
           </div>
           <div class="mb-4">
             <label class="form-label fw-semibold">Password</label>
             <div class="input-group">
               <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
-              <input type="password" name="password" class="form-control border-start-0" placeholder="Password" required>
+              <input type="password" name="password" class="form-control border-start-0" placeholder="Password" autocomplete="off" required>
             </div>
           </div>
           <button type="submit" class="btn btn-primary w-100 btn-lg"><i class="fas fa-sign-in-alt me-2"></i>Login</button>
         </form>
-        <div class="mt-3 p-3 rounded-3" style="background:#FFF8F5;border:1px dashed var(--primary)">
-          <small><strong>🔑 Admin Login:</strong><br>
-          Email: admin@petadopt.com<br>
-          Password: password</small>
-        </div>
         <p class="text-center mt-3 text-muted">Don't have an account? <a href="register.php" class="fw-bold" style="color:var(--primary)">Create one</a></p>
       </div>
     </div>
