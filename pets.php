@@ -1,16 +1,16 @@
 <?php include 'header.php'; ?>
 <?php
-$where = "WHERE 1=1";
-if(!empty($_GET['species'])) $where .= " AND species='".$conn->real_escape_string($_GET['species'])."'";
-if(!empty($_GET['size'])) $where .= " AND size='".$conn->real_escape_string($_GET['size'])."'";
-if(!empty($_GET['gender'])) $where .= " AND gender='".$conn->real_escape_string($_GET['gender'])."'";
-if(!empty($_GET['search'])) $where .= " AND (name LIKE '%".$conn->real_escape_string($_GET['search'])."%' OR breed LIKE '%".$conn->real_escape_string($_GET['search'])."%')";
-$where .= " AND status='Available'";
-$pets = $conn->query("SELECT * FROM pets $where ORDER BY created_at DESC");
-$total = $conn->query("SELECT COUNT(*) as c FROM pets $where")->fetch_assoc()['c'];
+$filters = [];
+foreach (['species', 'size', 'gender', 'search'] as $filter) {
+    if (!empty($_GET[$filter])) $filters[] = rawurlencode($filter) . '=' . rawurlencode($_GET[$filter]);
+}
+$petsResponse = app_api_request('GET', 'pets' . ($filters ? '?' . implode('&', $filters) : ''));
+$pets = $petsResponse['data'] ?? [];
+$total = count($pets);
 ?>
 
 <div class="container py-5">
+  <?php if (!$petsResponse['ok']): ?><div class="alert alert-danger"><?= htmlspecialchars(app_api_error($petsResponse)) ?></div><?php endif; ?>
   <h2 class="section-title text-center mb-5">🐾 Available Pets (<?= $total ?>)</h2>
 
   <div class="card mb-4">
@@ -62,14 +62,13 @@ $total = $conn->query("SELECT COUNT(*) as c FROM pets $where")->fetch_assoc()['c
       <a href="pets.php" class="btn btn-primary mt-3">Sab Pets Dekho</a>
     </div>
     <?php endif; ?>
-    <?php while($pet = $pets->fetch_assoc()): ?>
+    <?php foreach($pets as $pet): ?>
     <div class="col-lg-3 col-md-4 col-sm-6">
       <div class="card pet-card h-100">
         <div class="position-relative">
           <?php
-          $has_img = file_exists('/var/www/html/pet-adoption/uploads/'.$pet['image']);
-          if($has_img) {
-            $img_src = '/pet-adoption/uploads/'.$pet['image'];
+          if(!empty($pet['image_url'])) {
+            $img_src = $pet['image_url'];
           } elseif($pet['species']=='Cat') {
             $img_src = 'https://cataas.com/cat?width=300&height=220&tag='.$pet['id'];
           } elseif($pet['species']=='Bird') {
@@ -95,13 +94,13 @@ $total = $conn->query("SELECT COUNT(*) as c FROM pets $where")->fetch_assoc()['c
           </div>
         </div>
         <div class="card-footer bg-white border-0 pb-3">
-          <a href="/pet-adoption/pet_detail.php?id=<?= $pet['id'] ?>" class="btn btn-primary w-100 btn-sm">
+          <a href="<?= app_url('pet_detail.php') ?>?id=<?= $pet['id'] ?>" class="btn btn-primary w-100 btn-sm">
             <i class="fas fa-eye me-1"></i>Details & Adopt
           </a>
         </div>
       </div>
     </div>
-    <?php endwhile; ?>
+    <?php endforeach; ?>
   </div>
 </div>
 <?php include 'footer.php'; ?>

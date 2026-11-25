@@ -2,8 +2,8 @@
 <?php
 $error = $success = '';
 if($_SERVER['REQUEST_METHOD']=='POST') {
-    $name = $conn->real_escape_string(trim($_POST['name']));
-    $email = $conn->real_escape_string(trim($_POST['email']));
+    $name = trim($_POST['name']);
+    $email = trim($_POST['email']);
     $pass = $_POST['password'];
     $confirm = $_POST['confirm_password'];
     if(strlen($name) < 2) $error = 'Name kam se kam 2 characters hona chahiye.';
@@ -11,12 +11,19 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
     elseif(strlen($pass) < 6) $error = 'Password kam se kam 6 characters hona chahiye.';
     elseif($pass !== $confirm) $error = 'Password match nahi kar raha!';
     else {
-        $exists = $conn->query("SELECT id FROM users WHERE email='$email'")->num_rows;
-        if($exists) $error = 'Yeh email already registered hai!';
-        else {
-            $hashed = password_hash($pass, PASSWORD_DEFAULT);
-            $conn->query("INSERT INTO users (name, email, password) VALUES ('$name', '$email', '$hashed')");
+        $registrationResponse = app_api_request('POST', 'auth/register', [
+            'name' => $name,
+            'email' => $email,
+            'password' => $pass
+        ]);
+        if ($registrationResponse['ok']) {
+            $_SESSION['api_token'] = $registrationResponse['response']['access_token'];
+            $revokeResponse = app_api_request('POST', 'auth/logout');
+            unset($_SESSION['api_token']);
+            if (!$revokeResponse['ok']) error_log('Could not revoke the temporary website registration token.');
             $success = 'Registration successful! Ab login karo.';
+        } else {
+            $error = app_api_error($registrationResponse, 'Registration failed. Please try again.');
         }
     }
 }

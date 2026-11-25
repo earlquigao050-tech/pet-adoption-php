@@ -5,3 +5,5 @@ uploads/*.gif
 uploads/*.webp
 !uploads/.gitkeep
 config.php
+backend/.env
+backend/node_modules/

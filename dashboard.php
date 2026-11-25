@@ -1,22 +1,23 @@
-<?php include 'header.php'; ?>
 <?php
-if(!isset($_SESSION['user_id'])) { header('Location: /pet-adoption/login.php'); exit; }
-$uid = $_SESSION['user_id'];
-$requests = $conn->query("SELECT ar.*, p.name as pet_name, p.breed, p.species, p.image, p.status as pet_status
-    FROM adoption_requests ar JOIN pets p ON ar.pet_id=p.id WHERE ar.user_id=$uid ORDER BY ar.created_at DESC");
-$total_req = $conn->query("SELECT COUNT(*) as c FROM adoption_requests WHERE user_id=$uid")->fetch_assoc()['c'];
-$approved = $conn->query("SELECT COUNT(*) as c FROM adoption_requests WHERE user_id=$uid AND status='Approved'")->fetch_assoc()['c'];
-$pending = $conn->query("SELECT COUNT(*) as c FROM adoption_requests WHERE user_id=$uid AND status='Pending'")->fetch_assoc()['c'];
-$rejected = $conn->query("SELECT COUNT(*) as c FROM adoption_requests WHERE user_id=$uid AND status='Rejected'")->fetch_assoc()['c'];
+require_once __DIR__ . '/config.php';
+if(!isset($_SESSION['user_id'])) { header('Location: ' . app_url('login.php')); exit; }
+include __DIR__ . '/header.php';
+$requestsResponse = app_api_request('GET', 'me/requests');
+$requests = $requestsResponse['data'] ?? [];
+$total_req = count($requests);
+$approved = count(array_filter($requests, function ($request) { return $request['status'] === 'Approved'; }));
+$pending = count(array_filter($requests, function ($request) { return $request['status'] === 'Pending'; }));
+$rejected = count(array_filter($requests, function ($request) { return $request['status'] === 'Rejected'; }));
 ?>
 <div class="container py-5">
+  <?php if (!$requestsResponse['ok']): ?><div class="alert alert-danger"><?= htmlspecialchars(app_api_error($requestsResponse)) ?></div><?php endif; ?>
   <div class="row mb-4">
     <div class="col">
       <h3 class="fw-bold"><i class="fas fa-tachometer-alt me-2" style="color:var(--primary)"></i>My Dashboard</h3>
       <p class="text-muted">Welcome back, <strong><?= htmlspecialchars($_SESSION['name']) ?></strong>! 👋</p>
     </div>
     <div class="col-auto">
-      <a href="/pet-adoption/pets.php" class="btn btn-primary"><i class="fas fa-search me-2"></i>New Pet Dhundo</a>
+      <a href="<?= app_url('pets.php') ?>" class="btn btn-primary"><i class="fas fa-search me-2"></i>New Pet Dhundo</a>
     </div>
   </div>
 
@@ -45,7 +46,7 @@ $rejected = $conn->query("SELECT COUNT(*) as c FROM adoption_requests WHERE user
         <div style="font-size:4rem">🐾</div>
         <h5 class="text-muted">Abhi koi request nahi hai</h5>
         <p class="text-muted">Koi pet adopt karo aur request bhejo!</p>
-        <a href="/pet-adoption/pets.php" class="btn btn-primary mt-2"><i class="fas fa-search me-2"></i>Pets Browse Karo</a>
+        <a href="<?= app_url('pets.php') ?>" class="btn btn-primary mt-2"><i class="fas fa-search me-2"></i>Pets Browse Karo</a>
       </div>
       <?php else: ?>
       <div class="table-responsive">
@@ -61,13 +62,13 @@ $rejected = $conn->query("SELECT COUNT(*) as c FROM adoption_requests WHERE user
             </tr>
           </thead>
           <tbody>
-          <?php while($req = $requests->fetch_assoc()): ?>
+          <?php foreach($requests as $req): ?>
           <tr>
             <td>
               <div class="d-flex align-items-center gap-2">
                 <?php
-                $has = file_exists('/var/www/html/pet-adoption/uploads/'.$req['image']);
-                if($has) $src = '/pet-adoption/uploads/'.$req['image'];
+                $has = !empty($req['image_url']);
+                if($has) $src = $req['image_url'];
                 elseif($req['species']=='Cat') $src = 'https://cataas.com/cat?width=50&height=50';
                 else $src = 'https://placedog.net/50/50?id='.$req['pet_id'];
                 ?>
@@ -87,12 +88,12 @@ $rejected = $conn->query("SELECT COUNT(*) as c FROM adoption_requests WHERE user
               <span class="badge bg-<?= $badges[$s] ?>"><i class="fas fa-<?= $icons[$s] ?> me-1"></i><?= $s ?></span>
             </td>
             <td>
-              <a href="/pet-adoption/pet_detail.php?id=<?= $req['pet_id'] ?>" class="btn btn-sm btn-outline-primary">
+              <a href="<?= app_url('pet_detail.php') ?>?id=<?= $req['pet_id'] ?>" class="btn btn-sm btn-outline-primary">
                 <i class="fas fa-eye me-1"></i>View
               </a>
             </td>
           </tr>
-          <?php endwhile; ?>
+          <?php endforeach; ?>
           </tbody>
         </table>
       </div>

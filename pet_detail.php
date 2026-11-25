@@ -1,26 +1,32 @@
 <?php include 'header.php'; ?>
 <?php
 $id = intval($_GET['id'] ?? 0);
-$pet = $conn->query("SELECT * FROM pets WHERE id=$id")->fetch_assoc();
-if(!$pet) { echo "<div class='container py-5 text-center'><h3>Pet not found</h3></div>"; include 'footer.php'; exit; }
+$petResponse = app_api_request('GET', 'pets/' . $id);
+$pet = $petResponse['data'];
+if(!$pet) {
+    $message = $petResponse['status'] === 404 ? 'Pet not found.' : app_api_error($petResponse, 'Could not load pet details.');
+    echo '<div class="container py-5 text-center"><h3>' . htmlspecialchars($message) . '</h3></div>';
+    include 'footer.php';
+    exit;
+}
 
 $msg = '';
 if($_SERVER['REQUEST_METHOD']=='POST' && isset($_SESSION['user_id'])) {
-    $uid = $_SESSION['user_id'];
-    $pid = $id;
-    $message = $conn->real_escape_string($_POST['message'] ?? '');
-    $existing = $conn->query("SELECT id FROM adoption_requests WHERE user_id=$uid AND pet_id=$pid")->num_rows;
-    if($existing > 0) {
-        $msg = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>Aapne pehle se request kar di hai is pet ke liye!</div>';
-    } else {
-        $conn->query("INSERT INTO adoption_requests (user_id, pet_id, message) VALUES ($uid, $pid, '$message')");
-        $conn->query("UPDATE pets SET status='Pending' WHERE id=$pid");
+    $message = trim($_POST['message'] ?? '');
+    if ($message !== '') {
+        $requestResponse = app_api_request('POST', 'pets/' . $id . '/adoption-requests', ['message' => $message]);
+        if ($requestResponse['ok']) {
         $msg = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>Adoption request successfully bheji gayi! Admin se approval ka wait karo.</div>';
+        } else {
+            $msg = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>' . htmlspecialchars(app_api_error($requestResponse)) . '</div>';
+        }
+    } else {
+        $msg = '<div class="alert alert-danger">Please enter a message.</div>';
     }
 }
-$has_img = file_exists('/var/www/html/pet-adoption/uploads/'.$pet['image']);
+$has_img = !empty($pet['image_url']);
 if($has_img) {
-  $img_src = '/pet-adoption/uploads/'.$pet['image'];
+  $img_src = $pet['image_url'];
 } elseif($pet['species']=='Cat') {
   $img_src = 'https://cataas.com/cat?width=600&height=400';
 } elseif($pet['species']=='Bird') {
@@ -35,8 +41,8 @@ if($has_img) {
 <div class="container py-5">
   <nav aria-label="breadcrumb" class="mb-4">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/pet-adoption/" class="text-decoration-none" style="color:var(--primary)">Home</a></li>
-      <li class="breadcrumb-item"><a href="/pet-adoption/pets.php" class="text-decoration-none" style="color:var(--primary)">Pets</a></li>
+      <li class="breadcrumb-item"><a href="<?= app_url() ?>" class="text-decoration-none" style="color:var(--primary)">Home</a></li>
+      <li class="breadcrumb-item"><a href="<?= app_url('pets.php') ?>" class="text-decoration-none" style="color:var(--primary)">Pets</a></li>
       <li class="breadcrumb-item active"><?= htmlspecialchars($pet['name']) ?></li>
     </ol>
   </nav>
@@ -97,8 +103,8 @@ if($has_img) {
         <?php else: ?>
         <div class="alert alert-info">
           <i class="fas fa-info-circle me-2"></i>Adopt karne ke liye pehle
-          <a href="/pet-adoption/login.php" class="fw-bold">Login karo</a> ya
-          <a href="/pet-adoption/register.php" class="fw-bold">Register karo</a>
+          <a href="<?= app_url('login.php') ?>" class="fw-bold">Login karo</a> ya
+          <a href="<?= app_url('register.php') ?>" class="fw-bold">Register karo</a>
         </div>
         <?php endif; ?>
       <?php else: ?>

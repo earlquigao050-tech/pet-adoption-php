@@ -13,9 +13,9 @@
       <div class="col-md-4 mb-4">
         <h6 class="text-white">Quick Links</h6>
         <ul class="list-unstyled">
-          <li><a href="/pet-adoption/" class="text-muted text-decoration-none"><i class="fas fa-chevron-right me-1 text-warning" style="font-size:0.7rem"></i>Home</a></li>
-          <li><a href="/pet-adoption/pets.php" class="text-muted text-decoration-none"><i class="fas fa-chevron-right me-1 text-warning" style="font-size:0.7rem"></i>Browse Pets</a></li>
-          <li><a href="/pet-adoption/register.php" class="text-muted text-decoration-none"><i class="fas fa-chevron-right me-1 text-warning" style="font-size:0.7rem"></i>Register</a></li>
+          <li><a href="<?= app_url() ?>" class="text-muted text-decoration-none"><i class="fas fa-chevron-right me-1 text-warning" style="font-size:0.7rem"></i>Home</a></li>
+          <li><a href="<?= app_url('pets.php') ?>" class="text-muted text-decoration-none"><i class="fas fa-chevron-right me-1 text-warning" style="font-size:0.7rem"></i>Browse Pets</a></li>
+          <li><a href="<?= app_url('register.php') ?>" class="text-muted text-decoration-none"><i class="fas fa-chevron-right me-1 text-warning" style="font-size:0.7rem"></i>Register</a></li>
         </ul>
       </div>
       <div class="col-md-4 mb-4">

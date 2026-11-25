@@ -1,25 +1,29 @@
-<?php include 'header.php'; ?>
 <?php
+require_once __DIR__ . '/config.php';
 $error = '';
 if($_SERVER['REQUEST_METHOD']=='POST') {
-    $email = $conn->real_escape_string(trim($_POST['email']));
+    $email = trim($_POST['email']);
     $pass = $_POST['password'];
-    $user = $conn->query("SELECT * FROM users WHERE email='$email'")->fetch_assoc();
-    if($user && password_verify($pass, $user['password'])) {
+    $loginResponse = app_api_request('POST', 'auth/login', ['email' => $email, 'password' => $pass]);
+    $user = $loginResponse['response']['user'] ?? null;
+    if($loginResponse['ok'] && $user) {
+        session_regenerate_id(true);
+        $_SESSION['api_token'] = $loginResponse['response']['access_token'];
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['name'] = $user['name'];
         $_SESSION['role'] = $user['role'];
         if($user['role']=='admin') {
-            header('Location: /pet-adoption/admin/dashboard.php');
+            header('Location: ' . app_url('admin/dashboard.php'));
         } else {
-            header('Location: /pet-adoption/dashboard.php');
+            header('Location: ' . app_url('dashboard.php'));
         }
         exit;
     } else {
-        $error = 'Email ya password galat hai!';
+        $error = app_api_error($loginResponse, 'Email ya password galat hai!');
     }
 }
 ?>
+<?php include __DIR__ . '/header.php'; ?>
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-md-5 col-lg-4">

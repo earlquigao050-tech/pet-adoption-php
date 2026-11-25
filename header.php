@@ -1,4 +1,7 @@
-<?php require_once 'config.php'; ?>
+<?php
+require_once __DIR__ . '/config.php';
+$backendHealth = app_api_request('GET', 'health');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -51,24 +54,24 @@ body { background: var(--light-bg); }
 <body>
 <nav class="navbar navbar-expand-lg">
   <div class="container">
-    <a class="navbar-brand" href="/pet-adoption/"><i class="fas fa-paw me-2"></i>Pet<span>Adopt</span></a>
+    <a class="navbar-brand" href="<?= app_url() ?>"><i class="fas fa-paw me-2"></i>Pet<span>Adopt</span></a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon" style="filter:invert(1)"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" href="/pet-adoption/"><i class="fas fa-home me-1"></i>Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="/pet-adoption/pets.php"><i class="fas fa-dog me-1"></i>Pets</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?= app_url() ?>"><i class="fas fa-home me-1"></i>Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?= app_url('pets.php') ?>"><i class="fas fa-dog me-1"></i>Pets</a></li>
         <?php if(isset($_SESSION['user_id'])): ?>
-        <li class="nav-item"><a class="nav-link" href="/pet-adoption/dashboard.php"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?= app_url($_SESSION['role'] === 'admin' ? 'admin/dashboard.php' : 'dashboard.php') ?>"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'): ?>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="fas fa-cog me-1"></i>Admin</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/pet-adoption/admin/add_pet.php"><i class="fas fa-plus me-2"></i>Add Pet</a></li>
-            <li><a class="dropdown-item" href="/pet-adoption/admin/manage_pets.php"><i class="fas fa-list me-2"></i>Manage Pets</a></li>
-            <li><a class="dropdown-item" href="/pet-adoption/admin/manage_requests.php"><i class="fas fa-clipboard-list me-2"></i>Requests</a></li>
-            <li><a class="dropdown-item" href="/pet-adoption/admin/manage_users.php"><i class="fas fa-users me-2"></i>Users</a></li>
+            <li><a class="dropdown-item" href="<?= app_url('admin/add_pet.php') ?>"><i class="fas fa-plus me-2"></i>Add Pet</a></li>
+            <li><a class="dropdown-item" href="<?= app_url('admin/manage_pets.php') ?>"><i class="fas fa-list me-2"></i>Manage Pets</a></li>
+            <li><a class="dropdown-item" href="<?= app_url('admin/manage_requests.php') ?>"><i class="fas fa-clipboard-list me-2"></i>Requests</a></li>
+            <li><a class="dropdown-item" href="<?= app_url('admin/manage_users.php') ?>"><i class="fas fa-users me-2"></i>Users</a></li>
           </ul>
         </li>
         <?php endif; ?>
@@ -77,12 +80,15 @@ body { background: var(--light-bg); }
       <ul class="navbar-nav">
         <?php if(isset($_SESSION['user_id'])): ?>
         <li class="nav-item"><span class="nav-link text-warning"><i class="fas fa-user-circle me-1"></i><?= htmlspecialchars($_SESSION['name']) ?></span></li>
-        <li class="nav-item"><a class="btn btn-primary ms-2" href="/pet-adoption/logout.php"><i class="fas fa-sign-out-alt me-1"></i>Logout</a></li>
+        <li class="nav-item"><a class="btn btn-primary ms-2" href="<?= app_url('logout.php') ?>"><i class="fas fa-sign-out-alt me-1"></i>Logout</a></li>
         <?php else: ?>
-        <li class="nav-item"><a class="nav-link" href="/pet-adoption/login.php"><i class="fas fa-sign-in-alt me-1"></i>Login</a></li>
-        <li class="nav-item"><a class="btn btn-primary ms-2" href="/pet-adoption/register.php"><i class="fas fa-user-plus me-1"></i>Register</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?= app_url('login.php') ?>"><i class="fas fa-sign-in-alt me-1"></i>Login</a></li>
+        <li class="nav-item"><a class="btn btn-primary ms-2" href="<?= app_url('register.php') ?>"><i class="fas fa-user-plus me-1"></i>Register</a></li>
         <?php endif; ?>
       </ul>
     </div>
   </div>
 </nav>
+<?php if (!$backendHealth['ok']): ?>
+<div class="container mt-3"><div class="alert alert-warning mb-0"><i class="fas fa-exclamation-triangle me-2"></i><?= htmlspecialchars(app_api_error($backendHealth, 'Backend server is unavailable.')) ?></div></div>
+<?php endif; ?>
