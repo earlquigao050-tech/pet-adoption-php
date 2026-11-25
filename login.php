@@ -19,7 +19,7 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
         }
         exit;
     } else {
-        $error = app_api_error($loginResponse, 'Email ya password galat hai!');
+        $error = app_api_error($loginResponse, 'Incorrect email or password.');
     }
 }
 ?>
@@ -31,7 +31,7 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
         <div class="text-center mb-4">
           <div style="font-size:3rem">🔐</div>
           <h3 class="fw-bold">Welcome Back!</h3>
-          <p class="text-muted">Login karo aur pets adopt karo</p>
+          <p class="text-muted">Log in to continue your adoption journey.</p>
         </div>
         <?php if($error): ?><div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i><?= $error ?></div><?php endif; ?>
         <form method="POST">
@@ -39,7 +39,7 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
             <label class="form-label fw-semibold">Email</label>
             <div class="input-group">
               <span class="input-group-text bg-light border-end-0"><i class="fas fa-envelope text-muted"></i></span>
-              <input type="email" name="email" class="form-control border-start-0" placeholder="aap@example.com" required>
+              <input type="email" name="email" class="form-control border-start-0" placeholder="you@example.com" required>
             </div>
           </div>
           <div class="mb-4">
@@ -56,7 +56,7 @@ if($_SERVER['REQUEST_METHOD']=='POST') {
           Email: admin@petadopt.com<br>
           Password: password</small>
         </div>
-        <p class="text-center mt-3 text-muted">Account nahi hai? <a href="register.php" class="fw-bold" style="color:var(--primary)">Register karo</a></p>
+        <p class="text-center mt-3 text-muted">Don't have an account? <a href="register.php" class="fw-bold" style="color:var(--primary)">Create one</a></p>
       </div>
     </div>
   </div>

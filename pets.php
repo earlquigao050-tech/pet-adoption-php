@@ -18,7 +18,7 @@ $total = count($pets);
       <form method="GET" class="row g-3 align-items-end">
         <div class="col-md-3">
           <label class="form-label fw-semibold">🔍 Search</label>
-          <input type="text" name="search" class="form-control" placeholder="Pet name ya breed..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+          <input type="text" name="search" class="form-control" placeholder="Pet name or breed..." value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
         </div>
         <div class="col-md-2">
           <label class="form-label fw-semibold">Species</label>
@@ -58,8 +58,8 @@ $total = count($pets);
     <?php if($total == 0): ?>
     <div class="col-12 text-center py-5">
       <div style="font-size:5rem">🐾</div>
-      <h4 class="text-muted">Koi pet nahi mila. Filter change karo.</h4>
-      <a href="pets.php" class="btn btn-primary mt-3">Sab Pets Dekho</a>
+      <h4 class="text-muted">No pets found. Try changing your filters.</h4>
+      <a href="pets.php" class="btn btn-primary mt-3">See All Pets</a>
     </div>
     <?php endif; ?>
     <?php foreach($pets as $pet): ?>

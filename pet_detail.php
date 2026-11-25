@@ -16,7 +16,7 @@ if($_SERVER['REQUEST_METHOD']=='POST' && isset($_SESSION['user_id'])) {
     if ($message !== '') {
         $requestResponse = app_api_request('POST', 'pets/' . $id . '/adoption-requests', ['message' => $message]);
         if ($requestResponse['ok']) {
-        $msg = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>Adoption request successfully bheji gayi! Admin se approval ka wait karo.</div>';
+        $msg = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>Your adoption request has been submitted! Please wait for administrator approval.</div>';
         } else {
             $msg = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>' . htmlspecialchars(app_api_error($requestResponse)) . '</div>';
         }
@@ -102,13 +102,13 @@ if($has_img) {
         </button>
         <?php else: ?>
         <div class="alert alert-info">
-          <i class="fas fa-info-circle me-2"></i>Adopt karne ke liye pehle
-          <a href="<?= app_url('login.php') ?>" class="fw-bold">Login karo</a> ya
-          <a href="<?= app_url('register.php') ?>" class="fw-bold">Register karo</a>
+          <i class="fas fa-info-circle me-2"></i>To adopt this pet, please
+          <a href="<?= app_url('login.php') ?>" class="fw-bold">log in</a> or
+          <a href="<?= app_url('register.php') ?>" class="fw-bold">create an account</a>.
         </div>
         <?php endif; ?>
       <?php else: ?>
-      <div class="alert alert-warning"><i class="fas fa-clock me-2"></i>Yeh pet abhi <?= $pet['status'] ?> hai.</div>
+      <div class="alert alert-warning"><i class="fas fa-clock me-2"></i>This pet is currently <?= htmlspecialchars($pet['status']) ?>.</div>
       <?php endif; ?>
     </div>
   </div>
@@ -127,17 +127,17 @@ if($has_img) {
             <img src="<?= $img_src ?>" class="rounded-3" style="width:100%;height:180px;object-fit:cover" alt="">
           </div>
           <div class="mb-3">
-            <label class="form-label fw-semibold">Apna message likho <span class="text-danger">*</span></label>
-            <textarea name="message" class="form-control" rows="4" required placeholder="Aap kyun adopt karna chahte ho? Ghar ka environment kaisa hai? Previous pet experience hai?"></textarea>
+            <label class="form-label fw-semibold">Your message <span class="text-danger">*</span></label>
+            <textarea name="message" class="form-control" rows="4" required placeholder="Why would you like to adopt this pet? Please describe your home environment and any previous pet experience."></textarea>
           </div>
           <div class="alert alert-light small">
             <i class="fas fa-info-circle text-primary me-1"></i>
-            Request bhejne ke baad admin review karega aur aapko approve/reject karega.
+            After you submit your request, an administrator will review it and notify you of the decision.
           </div>
         </div>
         <div class="modal-footer border-0 pt-0">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary px-4"><i class="fas fa-paper-plane me-2"></i>Request Bhejo</button>
+          <button type="submit" class="btn btn-primary px-4"><i class="fas fa-paper-plane me-2"></i>Send Request</button>
         </div>
       </form>
     </div>

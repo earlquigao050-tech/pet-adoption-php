@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-4 mb-4">
         <h5><i class="fas fa-paw me-2" style="color:var(--primary)"></i>PetAdopt India</h5>
-        <p class="text-muted">Har ek pet deserves ek loving home. Hamara mission hai abandoned animals ko achhe ghar dilana.</p>
+        <p class="text-muted">Every pet deserves a loving home. Our mission is to help abandoned animals find caring families.</p>
         <div class="d-flex gap-3">
           <a href="#" class="text-muted fs-5"><i class="fab fa-facebook"></i></a>
           <a href="#" class="text-muted fs-5"><i class="fab fa-instagram"></i></a>

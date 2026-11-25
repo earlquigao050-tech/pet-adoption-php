@@ -17,7 +17,7 @@ $rejected = count(array_filter($requests, function ($request) { return $request[
       <p class="text-muted">Welcome back, <strong><?= htmlspecialchars($_SESSION['name']) ?></strong>! 👋</p>
     </div>
     <div class="col-auto">
-      <a href="<?= app_url('pets.php') ?>" class="btn btn-primary"><i class="fas fa-search me-2"></i>New Pet Dhundo</a>
+      <a href="<?= app_url('pets.php') ?>" class="btn btn-primary"><i class="fas fa-search me-2"></i>Find a Pet</a>
     </div>
   </div>
 
@@ -44,9 +44,9 @@ $rejected = count(array_filter($requests, function ($request) { return $request[
       <?php if($total_req == 0): ?>
       <div class="text-center py-5">
         <div style="font-size:4rem">🐾</div>
-        <h5 class="text-muted">Abhi koi request nahi hai</h5>
-        <p class="text-muted">Koi pet adopt karo aur request bhejo!</p>
-        <a href="<?= app_url('pets.php') ?>" class="btn btn-primary mt-2"><i class="fas fa-search me-2"></i>Pets Browse Karo</a>
+        <h5 class="text-muted">You don't have any adoption requests yet.</h5>
+        <p class="text-muted">Find a pet and submit an adoption request to get started!</p>
+        <a href="<?= app_url('pets.php') ?>" class="btn btn-primary mt-2"><i class="fas fa-search me-2"></i>Browse Pets</a>
       </div>
       <?php else: ?>
       <div class="table-responsive">
